@@ -45,22 +45,36 @@ def keypadRead():
     2: (False, False, True)
     }
 
-    for i in range(4): #loop through the rows
-        key2pi()
-        GPIO.output(9, map[i][0])  #MSB
-        GPIO.output(10, map[i][1])
-        GPIO.output(11, map[i][2]) #LSB
-        time.sleep(0.01)
-        pi2key()
-        column_input = (GPIO.input(11), GPIO.input(10), GPIO.input(9))
-        for j in range(3): #loop through the columns
-            if(column_input == map_onehot[j]):
-                return matrix[i][j]
+    try:
+        while(True):
+            print("LOL")
+            for i in range(4): #loop through the rows
+                key2pi()
+                GPIO.output(9, map[i][0])  #MSB
+                GPIO.output(10, map[i][1])
+                GPIO.output(11, map[i][2]) #LSB
+                time.sleep(0.01)
+                pi2key()
+                column_input = (GPIO.input(11), GPIO.input(10), GPIO.input(9))
+                for j in range(3): #loop through the columns
+                    if(column_input == map_onehot[j]):
+                        time.sleep(0.01) #debounce???
+                        if(column_input == map_onehot[j]):
+                            return matrix[i][j]
+    except KeyboardInterrupt:
+        GPIO.cleanup()
+        return
 
 
 try:
-    while(True):
-        print("LOL")
-        keypadRead()
-except KeyboardInterrupt:
-    GPIO.cleanup()
+    f = open("password.txt", 'r')
+    password = f.readline()
+    f.close()
+except IOError:
+    password = '1234'
+
+print(password)
+for i in range(len(password)):
+    letter = str(keypadRead())
+    if (password[i] != letter):
+        print("Wrong password")
