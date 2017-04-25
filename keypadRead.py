@@ -85,3 +85,4 @@ for i in range(len(password)-1):
     if (password[i] != letter):
         print("Wrong password")
         print("should be", password[i])
+        time.sleep(1)
