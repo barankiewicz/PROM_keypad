@@ -26,7 +26,9 @@ def pi2key():
     GPIO.output(14, True) #disable LOAD
     GPIO.output(15, False) #enable OUTPUT-ENABLE
     time.sleep(0.01)
-    GPIO.setup(inputs, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    #GPIO.setup(inputs, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.setup(inputs, GPIO.IN)
+
 
 def keypadRead():
     #a matrix representing the keypad
@@ -53,7 +55,6 @@ def keypadRead():
 
     try:
         while(True):
-            print("LOL")
             for i in range(4): #loop through the rows
                 key2pi()
                 GPIO.output(9, map[i][0])  #MSB
@@ -71,18 +72,44 @@ def keypadRead():
         GPIO.cleanup()
         return
 
+def test():
+    GPIO.setmode(GPIO.BCM)
+    controls_in = (9, 10, 11)
+    controls_out = (14, 15, 8)
+    GPIO.setup(controls_in, GPIO.IN)
+    GPIO.setup(controls_out, GPIO.OUT)
+    GPIO.output(controls_out, True)
+    inputs = (GPIO.input(9), GPIO.input(10), GPIO.input(11))
+    print(str(inputs))
+    return
 
-try:
-    f = open("password.txt", 'r')
-    password = f.readline()
-    f.close()
-except IOError:
-    password = '1234'
+def ledcount(dur):
+    #dur = float(dur)
+    GPIO.setmode(GPIO.BCM)
+    leds = (5, 6, 12, 13, 16, 19, 20, 26)
+    GPIO.setup(leds, GPIO.OUT)
+    single_time = dur/8
+    for i in range(8):
+        GPIO.output(leds[i],True)
+        time.sleep(single_time)
+    GPIO.output(leds, False)
 
-print(password)
-for i in range(len(password)-1):
-    letter = str(keypadRead())
-    if (password[i] != letter):
-        print("Wrong password")
-        print("should be", password[i])
-        time.sleep(1)
+ledcount(1.5)
+# keypadRead()
+# keypadRead()
+# keypadRead()
+
+# try:
+#     f = open("password.txt", 'r')
+#     password = f.readline()
+#     f.close()
+# except IOError:
+#     password = '1234'
+#
+# print(password)
+# for i in range(len(password)-1):
+#     letter = str(keypadRead())
+#     if (password[i] != letter):
+#         print("Wrong password")
+#         print("should be", password[i])
+#         time.sleep(1)
