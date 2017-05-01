@@ -1,6 +1,8 @@
 import RPi.GPIO as GPIO
 import time
+from data_bus import key2pi, pi2key
 
+###### INITIAL SETUP ############################
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 
@@ -8,27 +10,7 @@ inputs = [9, 10, 11] #list of GPIO data wires
 controls = (14,15) #list of control wires
 GPIO.setup(controls, GPIO.OUT)
 
-def pi2key():
-    GPIO.setmode(GPIO.BCM)
-    inputs = (9, 10, 11)
-    controls = (14,15) #list of control wires
-    GPIO.setup(controls, GPIO.OUT)
-    GPIO.output(14, True) #disable LOAD
-    GPIO.output(15, False) #enable OUTPUT-ENABLE
-    time.sleep(0.01)
-    GPIO.setup(inputs, GPIO.OUT)
-
-def key2pi():
-    GPIO.setmode(GPIO.BCM)
-    inputs = (9, 10, 11)
-    controls = (14,15) #list of control wires
-    GPIO.setup(controls, GPIO.OUT)
-    GPIO.output(14, False) #disable LOAD
-    GPIO.output(15, True) #enable OUTPUT-ENABLE
-    time.sleep(0.01)
-    GPIO.setup(inputs, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-    # GPIO.setup(inputs, GPIO.IN)
-
+#################################################
 
 def keypadRead():
     #a matrix representing the keypad
@@ -72,17 +54,6 @@ def keypadRead():
     except KeyboardInterrupt:
         GPIO.cleanup()
         return
-
-def test():
-    GPIO.setmode(GPIO.BCM)
-    controls_in = (9, 10, 11)
-    controls_out = (14, 15, 8)
-    GPIO.setup(controls_in, GPIO.IN)
-    GPIO.setup(controls_out, GPIO.OUT)
-    GPIO.output(controls_out, True)
-    inputs = (GPIO.input(9), GPIO.input(10), GPIO.input(11))
-    print(str(inputs))
-    return
 
 def ledcount(dur):
     GPIO.setmode(GPIO.BCM)
