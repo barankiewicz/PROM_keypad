@@ -1,3 +1,6 @@
+import RPi.GPIO as GPIO
+import time
+
 def pi2key():
     GPIO.setmode(GPIO.BCM)
     inputs = (9, 10, 11)
@@ -16,5 +19,5 @@ def key2pi():
     GPIO.output(14, False) #disable LOAD
     GPIO.output(15, True) #enable OUTPUT-ENABLE
     time.sleep(0.01)
-    GPIO.setup(inputs, GPIO.IN, pull_up_down = GPIO.PUD_UP)
-    # GPIO.setup(inputs, GPIO.IN)
+    #GPIO.setup(inputs, GPIO.IN, pull_up_down = GPIO.PUD_UP)
+    GPIO.setup(inputs, GPIO.IN)
