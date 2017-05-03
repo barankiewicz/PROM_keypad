@@ -3,12 +3,12 @@ import sys
 import random
 import os
 import curses
+import RPi.GPIO as GPIO
 from data_bus import key2pi, pi2key
+import CFG
 
 #CONSTANTS
 
-MAXIMUM_TRIES = 2
-TIMEOUT = 5
 
 
 def number():
@@ -29,26 +29,26 @@ def timeout(seconds):
         time.sleep(1)
         sys.stdout.flush()
 
-def flash_green(time):
+def flash_green():
     pi2key()
-    GPIO.output(9, True)  #MSB
-    GPIO.output(10, False)
-    GPIO.output(11, False) #LSB
-    time.sleep(time)
+    GPIO.output(9, 1)  #MSB
+    GPIO.output(10, 0)
+    GPIO.output(11, 0) #LSB
+    time.sleep(3)
     return
 
-def flash_red(time):
+def flash_red():
     pi2key()
-    GPIO.output(9, True)  #MSB
-    GPIO.output(10, False)
-    GPIO.output(11, True) #LSB
-    time.sleep(time)
+    GPIO.output(9, 1)  #MSB
+    GPIO.output(10, 0)
+    GPIO.output(11, 1) #LSB
+    time.sleep(1)
     return
 
 def buzzer():
     return
 
-def passwordReadFromFile (filename):
+def ReadFromFile(filename):
     try:
         f = open("password.txt", 'r')
         password = f.readline()
@@ -59,29 +59,23 @@ def passwordReadFromFile (filename):
 
 
 def passwordRead(password):
-    tries = 0
+    password_input = ''
+    sys.stdout.flush()
+    console_clear()
+    sys.stdout.write("Enter password:")
+    for i in range(len(password)-1):
+        letter = str(keypadRead())
+        password_input += letter
 
-    while (tries <= MAXIMUM_TRIES-1):
-        password_input = ''
+        sys.stdout.write("\r%s%s" % ('*'*(len(password_input)-1), password_input[-1]))
         sys.stdout.flush()
-        console_clear()
-        for i in range(len(password)-1):
-            letter = str(number())
-            password_input += letter
-
-            sys.stdout.write("\r%s%s" % ('*'*(len(password_input)-1), password_input[-1]))
-            sys.stdout.flush()
-            time.sleep(1)
-            sys.stdout.write("\r%s" % ('*'*len(password_input)))
-            sys.stdout.flush()
-            if (password[i] != letter):
-                tries += 1
-                flash_red(1)
-                break
-
-
-
-    timeout(TIMEOUT)
+        time.sleep(1)
+        sys.stdout.write("\r%s" % ('*'*len(password_input)))
+        sys.stdout.flush()
+        if (password[i] != letter):
+            #flash_red()
+            return False
+    return True
 
 
 try:

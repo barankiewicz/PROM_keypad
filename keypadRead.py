@@ -18,7 +18,7 @@ matrix = [
 ['*', 0, '#', 'D']
 ]
 
-#a dictionary that maps rows/columns numbers to wire arrangement
+#a dictionary that maps rows numbers to wire arrangement
 map = {
 0: (0,0,0), #000
 1: (0,0,1),  #001
@@ -26,10 +26,11 @@ map = {
 3: (0,1,1)    #011
 }
 
+#a dictionary that maps columns numbers to wire arrangement (onehot)
 map_onehot = {
-0: (False, True, True),
-1: (True, False, True),
-2: (True, True, False)
+0: (0, 1, 1),
+1: (1, 0, 1),
+2: (1, 1, 0)
 }
 
 
@@ -43,40 +44,35 @@ def test():
     time.sleep(60)
 
 def keypadRead(matrix, map, map_onehot):
-    try:
-        while(True):
-            print("chuj")
-            for i in range(4): #loop through the rows
-                print("Setting mode to output")
-                pi2key()
-                GPIO.output(9, map[i][0])  #MSB
-                GPIO.output(10, map[i][1])
-                GPIO.output(11, map[i][2]) #LSB
-                print("Sending signal: ", map[i][0], map[i][1], map[i][2])
-                time.sleep(1)
-                print("Setting mode to input")
-                key2pi()
-                time.sleep(1)
-                time.sleep(0.01)
-                in1 = GPIO.input(11)
-                time.sleep(0.01)
-                in2 = GPIO.input(10)
-                time.sleep(0.01)
-                in3 = GPIO.input(9)
-                column_input = (in1, in2, in3)
-                #column_input = (GPIO.input(11), GPIO.input(10), GPIO.input(9))
-                print("Signal from columns: ", column_input)
-                for j in range(3): #loop through the columns
+    while(True):
+        print("chuj")
+        for i in range(4): #loop through the rows
+            print("Setting mode to output")
+            pi2key()
+            GPIO.output(9, map[i][0])  #MSB
+            GPIO.output(10, map[i][1])
+            GPIO.output(11, map[i][2]) #LSB
+            print("Sending signal: ", map[i][0], map[i][1], map[i][2])
+            time.sleep(1)
+            print("Setting mode to input")
+            key2pi()
+            time.sleep(1)
+            time.sleep(0.01)
+            in1 = GPIO.input(11)
+            time.sleep(0.01)
+            in2 = GPIO.input(10)
+            time.sleep(0.01)
+            in3 = GPIO.input(9)
+            column_input = (in1, in2, in3)
+            #column_input = (GPIO.input(11), GPIO.input(10), GPIO.input(9))
+            print("Signal from columns: ", column_input)
+            for j in range(3): #loop through the columns
+                if(column_input in map_onehot.values()):
+                    print(matrix[i][j])
+                    return matrix[i][j]
+                    #time.sleep(0.01) #debounce???
+                    #if(column_input == map_onehot[j]):
 
-                    if(column_input == map_onehot[j]):
-                        print(matrix[i][j])
-                        return matrix[i][j]
-                        #time.sleep(0.01) #debounce???
-                        #if(column_input == map_onehot[j]):
-
-    except KeyboardInterrupt:
-        GPIO.cleanup()
-        return
 
 def ledcount(dur):
     GPIO.setmode(GPIO.BCM)
@@ -91,34 +87,18 @@ def ledcount(dur):
         GPIO.output(leds, False)
     except KeyboardInterrupt:
         GPIO.output(leds, False)
-#
-#
-# ledcount(0.05)
-# ledcount(0.05)
-# ledcount(0.05)
-# ledcount(0.05)
-# ledcount(0.05)
-# ledcount(0.05)
-# ledcount(0.05)
-# ledcount(0.05)
-#ledcount(2.0)
 
+# ledcount(0.05)
+# ledcount(0.05)
+# ledcount(0.05)
+# ledcount(0.05)
+# ledcount(0.05)
+# ledcount(0.05)
+# ledcount(0.05)
+# ledcount(0.05)
+ledcount(2.0)
+ledcount(2.0)
+ledcount(2.0)
+ledcount(2.0)
 
-
-# keypadRead(matrix, map, map_onehot)
-test()
-
-# try:
-#     f = open("password.txt", 'r')
-#     password = f.readline()
-#     f.close()
-# except IOError:
-#     password = '1234'
-#
-# print(password)
-# for i in range(len(password)-1):
-#     letter = str(keypadRead())
-#     if (password[i] != letter):
-#         print("Wrong password")
-#         print("should be", password[i])
-#         time.sleep(1)
+#keypadRead(matrix, map, map_onehot)
