@@ -2,26 +2,15 @@ import time
 import sys
 import random
 import os
-import curses
 import RPi.GPIO as GPIO
 from data_bus import key2pi, pi2key
 from CFG import *
 from keypadRead import keypadRead
 
-#CONSTANTS
-
-
-
-def number():
-    time.sleep(0.1)
-    return random.randint(0, 9)
-
 def console_clear():
     #os.system('cls')    #for windows
     os.system('clear')  #for linux
     return
-
-
 
 def timeout():
     console_clear()
@@ -50,6 +39,17 @@ def flash_red():
 def buzzer():
     return
 
+def time_lockout():
+    if START_TIME == END_TIME:
+        return True
+    else:
+        current_hour = time.localtime(time.time()).tm_hour
+
+        if current_hour > START_TIME and current_hour < END_TIME:
+            return True
+        else:
+            return False
+
 def ReadFromFile(filename):
     try:
         f = open("password.txt", 'r')
@@ -59,14 +59,17 @@ def ReadFromFile(filename):
         password = '1234'
     return password
 
-
 def passwordRead(password):
     password_input = ''
     sys.stdout.flush()
     console_clear()
     sys.stdout.write("Enter password:\n")
     for i in range(len(password)-1):
-        letter = str(keypadRead())
+        if i == 0:
+            letter = str(keypadRead())
+        else:
+            letter = str(keypadRead(INTER_DIGIT))
+
         password_input += letter
 
         sys.stdout.write("\r%s%s" % ('*'*(len(password_input)-1), password_input[-1]))
@@ -83,23 +86,31 @@ def passwordRead(password):
     flash_green()
     return True
 
+def main():
+    try:
+        if time_lockout:
+            while(True):
+                if (MAXIMUM_TRIES == 0):
+                    passwordRead(ReadFromFile("password.txt"))
+                else:
+                    tries = 0
+                    while(tries < MAXIMUM_TRIES):
+                        result = passwordRead(ReadFromFile("password.txt"))
+                        if not result:
+                            sys.stdout.flush()
+                            sys.stdout.write("\nWRONG\n")
+                            sys.stdout.flush()
+                            tries += 1
 
-try:
-    while(True):
-        if (MAXIMUM_TRIES == 0):
-            passwordRead(ReadFromFile("password.txt"))
+                    timeout()
         else:
-            tries = 0
-            while(tries < MAXIMUM_TRIES):
-                result = passwordRead(ReadFromFile("password.txt"))
-                if not result:
-                    sys.stdout.flush()
-                    sys.stdout.write("\nWRONG \n")
-                    sys.stdout.flush()
-                    tries += 1
+            sys.stdout.flush()
+            sys.stdout.write("\nThe lock is closed at this time of the day\n")
+            sys.stdout.flush()
 
-            timeout()
 
-except KeyboardInterrupt:
-    console_clear()
-    print("KEYBOARD INTERRUPT")
+    except KeyboardInterrupt:
+        console_clear()
+        print("KEYBOARD INTERRUPT")
+
+main()

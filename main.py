@@ -3,6 +3,7 @@ import time
 from data_bus import key2pi, pi2key
 
 ###### INITIAL SETUP ############################
+
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 

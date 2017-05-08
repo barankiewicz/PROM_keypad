@@ -53,6 +53,14 @@ def ledcount(dur):
         GPIO.output(leds, False)
 
 
+def counter(time):
+    start = time.time()
+    while time.time() - start < time:
+        print(time.time() - start)
+
+    return True
+
+counter(3)
 # ledcount(2.0)
 # ledcount(2.0)
 # ledcount(2.0)

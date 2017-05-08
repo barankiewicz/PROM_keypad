@@ -1,5 +1,14 @@
+INTER_DIGIT = 3
+
+########### MAXIMUM TRY LOCKOUT #
+
 MAXIMUM_TRIES = 2
 TIMEOUT = 5
+
+########### TIME LOCKOUT #######
+
+START_TIME = 7
+END_TIME = 21
 
 ########### PINS ###############
 
