@@ -3,12 +3,46 @@ import sys
 import random
 import os
 import RPi.GPIO as GPIO
+import csv
 from data_bus import key2pi, pi2key
 from CFG import *
 from keypadRead import keypadRead
 
+def logtime_start():
+    with open('log.csv', 'a') as csvfile:
+        log = csv.writer(csvfile, delimiter = ' ')
+        log.writerow(['Started the lock: '] +
+        [time.gmtime(time.time()).tm_year] +
+        [time.gmtime(time.time()).tm_mon] +
+        [time.gmtime(time.time()).tm_mday] +
+        [time.gmtime(time.time()).tm_hour] +
+        [time.gmtime(time.time()).tm_min] +
+        [time.gmtime(time.time()).tm_sec])
+
+def logtime_end():
+    with open('log.csv', 'a') as csvfile:
+        log = csv.writer(csvfile, delimiter = ' ')
+        log.writerow(['Ended the lock: '] +
+        [time.gmtime(time.time()).tm_year] +
+        [time.gmtime(time.time()).tm_mon] +
+        [time.gmtime(time.time()).tm_mday] +
+        [time.gmtime(time.time()).tm_hour] +
+        [time.gmtime(time.time()).tm_min] +
+        [time.gmtime(time.time()).tm_sec])
+
+def logtime(result):
+    with open('log.csv', 'a') as csvfile:
+        log = csv.writer(csvfile, delimiter = ' ')
+        log.writerow(['Entered combination'] +
+        [time.gmtime(time.time()).tm_year] +
+        [time.gmtime(time.time()).tm_mon] +
+        [time.gmtime(time.time()).tm_mday] +
+        [time.gmtime(time.time()).tm_hour] +
+        [time.gmtime(time.time()).tm_min] +
+        [time.gmtime(time.time()).tm_sec] +
+        [result])
+
 def console_clear():
-    #os.system('cls')    #for windows
     os.system('clear')  #for linux
     return
 
@@ -78,18 +112,21 @@ def passwordRead(password):
         sys.stdout.write("\r%s" % ('*'*len(password_input)))
         sys.stdout.flush()
         if (password[i] != letter):
-            sys.stdout.write("\nACCESS DENIED \n")
+            logtime(False)
+            sys.stdout.write("\nACCESS DENIED\n")
             flash_red()
             return False
 
-    sys.stdout.write("\nACCESS GRANTED \n")
+    sys.stdout.write("\nACCESS GRANTED\n")
+    logtime(True)
     flash_green()
     return True
 
 def main():
+    logtime_start()
     try:
-        if time_lockout:
-            while(True):
+        while True:
+            if time_lockout():
                 if (MAXIMUM_TRIES == 0):
                     passwordRead(ReadFromFile("password.txt"))
                 else:
@@ -97,20 +134,19 @@ def main():
                     while(tries < MAXIMUM_TRIES):
                         result = passwordRead(ReadFromFile("password.txt"))
                         if not result:
-                            sys.stdout.flush()
-                            sys.stdout.write("\nWRONG\n")
-                            sys.stdout.flush()
                             tries += 1
 
                     timeout()
-        else:
-            sys.stdout.flush()
-            sys.stdout.write("\nThe lock is closed at this time of the day\n")
-            sys.stdout.flush()
+            else:
+                sys.stdout.flush()
+                sys.stdout.write("\nThe lock is closed at this time of the day\n")
+                sys.stdout.flush()
+                time.sleep(5)
 
 
     except KeyboardInterrupt:
         console_clear()
+        logtime_end()
         print("KEYBOARD INTERRUPT")
 
 main()

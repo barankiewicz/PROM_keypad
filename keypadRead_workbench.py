@@ -23,9 +23,9 @@ def keypadRead(dur = 0):
     GPIO.output(leds, False)
 
     if dur == 0:
-        poll()
+        return poll()
     else:
-        single_time = dur/8
+        single_time = float(dur)/8
         for i in range(8):
             press = poll(single_time)
             if not press:
@@ -35,6 +35,7 @@ def keypadRead(dur = 0):
                 GPIO.output(leds, False)
                 return press
 
+        GPIO.cleanup()
         return 'X'
 
 
@@ -46,7 +47,7 @@ def poll(dur = 0):
     if dur == 0:
         while True:
             key = single_poll()
-            if key not False:
+            if not key == False:
                 return key
             else:
                 continue
@@ -54,7 +55,7 @@ def poll(dur = 0):
         start = time.time()
         while float(time.time() - start) < dur:
             key = single_poll()
-            if key not False:
+            if not key == False:
                 return key
             else:
                 continue
@@ -82,3 +83,5 @@ def single_poll():
                     return MATRIX[i][j]
 
     return False
+
+print(keypadRead(1))
