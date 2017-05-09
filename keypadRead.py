@@ -1,13 +1,23 @@
 import RPi.GPIO as GPIO
 import time
 from data_bus import key2pi, pi2key
+from buzzer import buzzer
 from CFG import *
+import global_variables
 
 ###### INITIAL SETUP ############################
 
 GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(CONTROLS, GPIO.OUT)
+
+var = global_variables.read()
+
+#################################################
+
+###### CONSTANTS ################################
+
+
 
 #################################################
 
@@ -47,6 +57,7 @@ def poll(dur = 0):
         while True:
             key = single_poll()
             if not key == False:
+                buzzer()
                 return key
             else:
                 continue
@@ -55,6 +66,7 @@ def poll(dur = 0):
         while float(time.time() - start) < dur:
             key = single_poll()
             if not key == False:
+                buzzer()
                 return key
             else:
                 continue

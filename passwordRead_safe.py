@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import time, sys, os
 from data_bus import *
 from CFG import *
-from keypadRead import *
+from keypadRead import keypadRead
 from logfile import *
 from timeLockout import time_lockout
 
@@ -43,7 +43,7 @@ def ReadFromFile(filename):
         password = '1234'
     return password
 
-def passwordRead(password):
+def safe_passwordRead(password):
     password_input = ''
     sys.stdout.flush()
     console_clear()
@@ -61,28 +61,30 @@ def passwordRead(password):
         time.sleep(0.3)
         sys.stdout.write("\r%s" % ('*'*len(password_input)))
         sys.stdout.flush()
-        if (password[i] != letter):
-            logtime(False)
-            sys.stdout.write("\nACCESS DENIED\n")
-            flash_red()
-            return False
 
-    sys.stdout.write("\nACCESS GRANTED\n")
-    logtime(True)
-    flash_green()
-    return True
 
-def main():
+    if (password_input != password):
+        logtime(False)
+        sys.stdout.write("\nACCESS DENIED\n")
+        flash_red()
+        return False
+    else:
+        sys.stdout.write("\nACCESS GRANTED\n")
+        logtime(True)
+        flash_green()
+        return True
+
+def safe_main():
     logtime_start()
     try:
         while True:
             if time_lockout():
                 if (MAXIMUM_TRIES == 0):
-                    passwordRead(ReadFromFile("password.txt"))
+                    safe_passwordRead(ReadFromFile("password.txt"))
                 else:
                     tries = 0
                     while(tries < MAXIMUM_TRIES):
-                        result = passwordRead(ReadFromFile("password.txt"))
+                        result = safe_passwordRead(ReadFromFile("password.txt"))
                         if not result:
                             tries += 1
 
@@ -101,4 +103,4 @@ def main():
 
 
 
-main()
+safe_main()
