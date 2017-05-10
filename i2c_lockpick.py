@@ -10,6 +10,14 @@ def idle(dur):
     while float(time.time() - start) < dur:
         bus.write_byte(0x38, 0b11111000)
 
+def column(column, dur):
+    if column == 0:
+        column0(dur)
+    elif column == 1:
+        column1(dur)
+    elif column == 2:
+        column2(dur)
+
 def column0(dur):
     start = time.time()
     while float(time.time() - start) < dur:
@@ -56,23 +64,28 @@ def check_red_led():
     else:
         return True
 
-bus = smbus.SMBus(1)
+def drive(char):
+    MATRIX = [
+    ['1', '2', '3'],
+    ['4', '5', '6'],
+    ['7', '8', '9'],
+    ['*', '0', '#']
+    ]
+    if char not in MATRIX:
+        return
 
-# while True:
-#
-#     tab = [241, 242, 244]
-#     bus.write_byte( I2C_ADDR, tab[i%3] )
-#     print("DRIVING: " + str(tab[i%3]))
-#     time.sleep(5)
-#     i += 1
-#
-#     i2cvalue = bus.read_byte( I2C_ADDR )
-#
-#     outputString = "INPUT = " + str( i2cvalue )
-#
-#     print( outputString )
-#
-#     time.sleep(1)
+    for i in range(4):
+        if char in MATRIX[i]:
+            for j in range(3):
+                if char == MATRIX[i][j]:
+                    column(j, 0.1)
+
+def lockpick():
+    password = ''
+
+    for i in range()
+
+bus = smbus.SMBus(1)
 
 while True:
     bus.write_byte( 0x38, 241 )
