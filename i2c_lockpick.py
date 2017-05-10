@@ -1,35 +1,42 @@
-import RPi.GPIO as GPIO
-import smbus, time
+#import RPi.GPIO as GPIO
+#import smbus, time
+
+def check_leds():
+    '''
+    This function checks the status of the green and red LEDs in the lock system
+    and returns a tuple of their boolean values (RED, GREEN)
+    '''
+    value = bin(bus.read_byte(0x38))[2:]
+    result = [value[3] == '1', value[4] == '1']
+    return tuple(result)
 
 def idle(dur):
+    '''
+    This function idles for the specific duration - it doesn't drive any
+    data onto any of the rows
+    '''
     start = time.time()
     while float(time.time() - start) < dur:
         bus.write_byte(0x38, 0b11111000)
 
-def column(column, dur):
-    if column == 0:
-        column0(dur)
-    elif column == 1:
-        column1(dur)
-    elif column == 2:
-        column2(dur)
-
-def column0(dur):
-    start = time.time()
-    while float(time.time() - start) < dur:
+def column(col):
+    '''
+    This function drives a 0 onto a row that is passed as an argument
+    '''
+    if col == 0:
         bus.write_byte(0x38, 0b11111100)
-
-def column1(dur):
-    start = time.time()
-    while float(time.time() - start) < dur:
+    elif col == 1:
         bus.write_byte(0x38, 0b11111010)
-
-def column2(dur):
-    start = time.time()
-    while float(time.time() - start) < dur:
+    elif col == 2:
         bus.write_byte(0x38, 0b11111001)
 
+    time.sleep(0.01)
+    return
+
 def row_read():
+    '''
+    This function reads which row the 0 is driven onto by the lock system and returns its number [0..3]
+    '''
     #a map between the row no and corresponding data bus bits
     MAP = {
     0: '000',
@@ -46,52 +53,51 @@ def row_read():
 
     return False
 
-def check_green_led():
-    value = bin(bus.read_byte(0x38))[2:][4] #take the 5th bit that corresponds with the green LED
-    if value == '0':
-        return False
-    else:
-        return True
-
-def check_red_led():
-    value = bin(bus.read_byte(0x38))[2:][3] #take the 6th bit that corresponds with the red LED
-    if value == '0':
-        return False
-    else:
-        return True
-
-def drive(char):
+def drive(row, col):
+    '''
+    This function drives the symbol corresponding to the row and the col of the
+    3x4 keypad MATRIX. (It waits for the correct row to be driven by the lock system
+    and then drives a 0 onto the correct column)
+    '''
     MATRIX = [
     ['1', '2', '3'],
     ['4', '5', '6'],
     ['7', '8', '9'],
     ['*', '0', '#']
     ]
-    if char not in MATRIX:
-        return
 
-    for i in range(4):
-        if char in MATRIX[i]:
-            for j in range(3):
-                if char == MATRIX[i][j]:
-                    column(j, 0.1)
+    while True:
+        if row_read() == row:
+            column(col)
+            time.sleep(0.01)
+            return
 
 def lockpick():
+    '''
+    This is the main lockpicking function. It returns the password when it detects
+    that the green LED has lit up.
+    '''
     MATRIX = [
     ['1', '2', '3'],
     ['4', '5', '6'],
     ['7', '8', '9'],
     ['*', '0', '#']
     ]
+    bus = smbus.SMBus(1)
     password = ''
 
-    for i in range(4):
-        for j in range(3):
-            drive(MATRIX[i][j])
+    while True: #Loop through the driving algorithm until the green LED lights up
+        row = 0
+        col = 0
+        for row in range(4):
+            for col in range(3):
+                drive(row, col)
+                leds = check_leds()
 
-bus = smbus.SMBus(1)
-
-while True:
-    bus.write_byte( 0x38, 241 )
-    time.sleep(1)
-    check_green_led()
+                if leds[0] == True: #If the red LED lights up, check the next digit
+                    continue
+                elif leds[0] == False and leds[1] == False: #if no LEDs light up, add the digit to the password and continue
+                    password += MATRIX[row][col]
+                elif leds[1] == True: #if the green LED lights up, add the digit to the password and return it, the lock is picked!
+                    password += MATRIX[row][col]
+                    return password
