@@ -1,14 +1,15 @@
 import RPi.GPIO as GPIO
 import time
-from data_bus import key2pi, pi2key
+from data_bus import *
 from CFG import *
 
 def buzzer(dur = 0.2):
     '''
+    This function implements the 'piezoelectric buzzer' optional software functionality.
     Buzzes the buzzer at 1kHz for specified amount of seconds.
     By default, it buzzes for 0.2 seconds.
     '''
-    pi2key()
+    pi_to_key()
     start = time.time()
     while float(time.time() - start) < dur:
         GPIO.output(DATA0, 1)  #MSB

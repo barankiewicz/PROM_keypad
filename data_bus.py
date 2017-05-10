@@ -2,7 +2,10 @@ import RPi.GPIO as GPIO
 import time
 from CFG import *
 
-def pi2key():
+def pi_to_key():
+    '''
+    This function sets the bi-directional data bus in the Pi-to-keypad mode
+    '''
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(CONTROLS, GPIO.OUT)
@@ -11,12 +14,14 @@ def pi2key():
     time.sleep(0.01)
     GPIO.setup(DATABUS, GPIO.OUT)
 
-def key2pi():
+def key_to_pi():
+    '''
+    This function sets the bi-directional data bus in the keypad-to-Pi mode
+    '''
     GPIO.setwarnings(False)
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(CONTROLS, GPIO.OUT)
     GPIO.output(LOAD, False) #disable LOAD
     GPIO.output(OUTPUT_ENABLE, True) #enable OUTPUT-ENABLE
     time.sleep(0.01)
-    #GPIO.setup(inputs, GPIO.IN, pull_up_down = GPIO.PUD_UP)
     GPIO.setup(DATABUS, GPIO.IN)

@@ -1,9 +1,8 @@
 import RPi.GPIO as GPIO
 import time
-from data_bus import key2pi, pi2key
-from buzzer import buzzer
+from data_bus import *
+from buzzer import *
 from CFG import *
-import global_variables
 
 ###### INITIAL SETUP ############################
 
@@ -11,21 +10,13 @@ GPIO.setwarnings(False)
 GPIO.setmode(GPIO.BCM)
 GPIO.setup(CONTROLS, GPIO.OUT)
 
-var = global_variables.read()
-
 #################################################
 
-###### CONSTANTS ################################
-
-
-
-#################################################
-
-def keypadRead(dur = 0):
+def keypad_read(dur = 0):
     '''
-    Reads the keypad for the time stated at the INTER_DIGIT time in the config file.
-    If no argument is given, it waits for the input until it gets it.
+    Reads the keypad for the time stated as the argument.
     If an argument is given and time is exceeded, returns 'X'
+    If no argument is given, it waits for the input until it gets it.
     '''
     GPIO.setmode(GPIO.BCM)
     leds = (5, 6, 12, 13, 16, 19, 20, 26)
@@ -51,7 +42,8 @@ def keypadRead(dur = 0):
 def poll(dur = 0):
     '''
     Polls for the duration given in seconds.
-    If no argument is given, polls until it gets a keypad input
+    If the argument is nonzero and the time is exceeded, returns False.
+    If no argument is given, polls until it gets a keypad input.
     '''
     if dur == 0:
         while True:
@@ -80,11 +72,11 @@ def single_poll():
     If it didn't get any 0's on the columns, returns False
     '''
     for i in range(4): #loop through the rows
-        pi2key()
+        pi_to_key()
         GPIO.output(DATA0, MAP[i][0])  #MSB
         GPIO.output(DATA1, MAP[i][1])
         GPIO.output(DATA2, MAP[i][2]) #LSB
-        key2pi()
+        key_to_pi()
 
         column_input = (GPIO.input(DATA2), GPIO.input(DATA1), GPIO.input(DATA0))
         for j in range(3): #loop through the columns
