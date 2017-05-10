@@ -10,19 +10,14 @@ from global_variables import *
 
 def read_from_file():
     '''
-    This function tries to get the passwords from the 'password.txt' file.
-    If password.txt isn't found, it sets the passwords to the default values of '1234'
+    This function tries to get the passwords from the config csv file.
+    If the file isn't found, it sets the passwords to the default values of '1234'
     and '9999'
     and returns them in a list.
     '''
-    passwords = []
     try:
-        f = open("password.txt", 'r')
-        for line in f:
-            passwords.append(line)
-        f.close()
-        for i in range(len(passwords)):
-            passwords[i] = passwords[i].strip()
+        dico = read()
+        passwords = [str(dico['PASSWORD']),str(dico['ADMIN_PASSWORD'])]
     except IOError:
         passwords = ['1234', '9999']
 
@@ -65,7 +60,6 @@ def password_read(passwords):
         return True
     elif password_input == passwords[1]:
         logtime(True)
-        flash_green()
         return print_line(0, read_menu())
     else:
         logtime(False)
@@ -111,5 +105,3 @@ def safe_password_read(passwords):
         sys.stdout.write("\nACCESS DENIED\n")
         flash_red()
         return False
-
-safe_password_read(read_from_file())

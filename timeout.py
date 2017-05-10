@@ -11,6 +11,7 @@ def timeout():
     dico = read()
     console_clear()
     for i in range(dico['TIMEOUT'] + 1):
-        sys.stdout.write(" TIMEOUT........%s\r" % (dico['TIMEOUT'] - i))
+        sys.stdout.write("TIMEOUT........%s\r" % (dico['TIMEOUT'] - i))
         time.sleep(1)
+        console_clear()
         sys.stdout.flush()

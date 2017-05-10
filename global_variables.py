@@ -13,6 +13,7 @@ def read():
                 continue
             else:
                 output.append(tuple(row))
+    csvfile.close()
     return {key: int(value) for (key,value) in output}
 
 def read_menu():
@@ -30,6 +31,7 @@ def read_menu():
             else:
                 output.append((i, tuple(row)))
                 i += 1
+    csvfile.close()
     return {key: value for (key,value) in output}
 
 def write(dico):
@@ -40,3 +42,4 @@ def write(dico):
         writer = csv.writer(csvfile, delimiter=' ')
         for key in dico:
             writer.writerow([key] + [dico[key]])
+    csvfile.close()

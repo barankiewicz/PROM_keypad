@@ -1,10 +1,6 @@
 import RPi.GPIO as GPIO
 import smbus, time
 
-# 241 - column 2
-# 242 - column 1
-# 244 - column 0
-
 def idle(dur):
     start = time.time()
     while float(time.time() - start) < dur:
@@ -81,9 +77,17 @@ def drive(char):
                     column(j, 0.1)
 
 def lockpick():
+    MATRIX = [
+    ['1', '2', '3'],
+    ['4', '5', '6'],
+    ['7', '8', '9'],
+    ['*', '0', '#']
+    ]
     password = ''
 
-    for i in range()
+    for i in range(4):
+        for j in range(3):
+            drive(MATRIX[i][j])
 
 bus = smbus.SMBus(1)
 

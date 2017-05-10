@@ -1,6 +1,5 @@
 from global_variables import *
 from console_clear import *
-from _lock import lock
 from keypad_read import *
 import sys
 
@@ -38,7 +37,7 @@ def print_line(i, dico):
     elif str(choice) == '5':
         return edit_line(dico[i][0])
     elif str(choice) == '0':
-        lock()
+        return
     else:
         return print_line(i, dico)
 
@@ -66,7 +65,6 @@ def edit_value(var, dico):
     new = ''
     result += 'Enter new value (* - return, # - enter): '
 
-
     while(True):
         sys.stdout.flush()
         console_clear()
@@ -83,5 +81,8 @@ def edit_value(var, dico):
             write(dico)
             return print_line(0, read_menu())
         else:
-            new += choice
-            result += choice
+            if len(new) >= 4:
+                return edit_value(var, dico)
+            else:
+                new += choice
+                result += choice
