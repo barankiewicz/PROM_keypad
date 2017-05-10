@@ -41,7 +41,8 @@ def lock():
                         timeout()
             else:
                 sys.stdout.flush()
-                sys.stdout.write("\nThe lock is closed at this time of the day\n")
+                console_clear()
+                sys.stdout.write("The lock is closed at this time of the day\n")
                 sys.stdout.flush()
                 time.sleep(5)
 

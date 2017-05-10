@@ -1,6 +1,7 @@
 from global_variables import *
 from console_clear import *
 from _lock import lock
+from keypad_read import *
 import sys
 
 '''
@@ -16,12 +17,11 @@ def print_line(i, dico):
     result += str(i) + ". "
     result += str(dico[i][0])
     result += ', * - up, # - down, 5 - edit, 0 - return'
-    print(result)
-    # console_clear()
-    # sys.stdout.flush()
-    # sys.stdout.write(result)
-    # sys.stdout.flush()
-    choice = input()
+    console_clear()
+    sys.stdout.flush()
+    sys.stdout.write(result)
+    sys.stdout.flush()
+    choice = keypad_read()
 
     if str(choice) == '*':
         if (i + 1) > max_choice:
@@ -37,28 +37,25 @@ def print_line(i, dico):
             return print_line(i, dico)
     elif str(choice) == '5':
         return edit_line(dico[i][0])
-        print('')
     elif str(choice) == '0':
-        print('')
-        #lock()
+        lock()
     else:
         return print_line(i, dico)
 
 def edit_line(var):
-    # sys.stdout.flush()
+    sys.stdout.flush()
     dico = read()
     result = ''
     result += str(var) + ', current value: '
     result += str(dico[var])
     result += ', 5 - edit, 0 - return'
-    print(result)
 
-    # console_clear()
-    # sys.stdout.flush()
-    # sys.stdout.write(result)
-    # sys.stdout.flush()
+    console_clear()
+    sys.stdout.flush()
+    sys.stdout.write(result)
+    sys.stdout.flush()
 
-    choice = input()
+    choice = keypad_read()
     if choice == '5':
         return edit_value(var, dico)
     elif choice == '0':
@@ -71,14 +68,12 @@ def edit_value(var, dico):
 
 
     while(True):
-        # sys.stdout.flush()
-        # console_clear()
-        # sys.stdout.flush()
-        # sys.stdout.write(result)
-        # sys.stdout.flush()
-        print(new)
-        print(result)
-        choice = input()
+        sys.stdout.flush()
+        console_clear()
+        sys.stdout.flush()
+        sys.stdout.write(result)
+        sys.stdout.flush()
+        choice = keypad_read()
         if choice == '*':
             return print_line(0, read_menu())
         elif choice == '#' and len(new) == 0:
@@ -90,5 +85,3 @@ def edit_value(var, dico):
         else:
             new += choice
             result += choice
-
-print_line(0, read_menu())

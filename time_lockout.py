@@ -23,5 +23,3 @@ def time_lockout():
             return True
         else:
             return False
-
-print(time_lockout())

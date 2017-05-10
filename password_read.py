@@ -4,22 +4,31 @@ from time_lockout import *
 from led_display import *
 from console_clear import *
 from led_flash import *
+from logfile import *
+from menu import *
+from global_variables import *
 
 def read_from_file():
     '''
-    This function tries to get the password from the 'password.txt' file.
-    If password.txt isn't found, it sets the password to the default value of '1234'
-    and returns it.
+    This function tries to get the passwords from the 'password.txt' file.
+    If password.txt isn't found, it sets the passwords to the default values of '1234'
+    and '9999'
+    and returns them in a list.
     '''
+    passwords = []
     try:
         f = open("password.txt", 'r')
-        password = f.readline()
+        for line in f:
+            passwords.append(line)
         f.close()
+        for i in range(len(passwords)):
+            passwords[i] = passwords[i].strip()
     except IOError:
-        password = '1234'
-    return password
+        passwords = ['1234', '9999']
 
-def password_read(password):
+    return tuple(passwords)
+
+def password_read(passwords):
     '''
     This function reads the sequence entered by the user, displays it in the console
     and compares it to the password read from ReadFromFile() function.
@@ -32,27 +41,39 @@ def password_read(password):
     console_clear()
     sys.stdout.write("Enter password:\n")
 
-    for i in range(len(password)-1):
+    for i in range(len(passwords[0])):
         if i == 0: #If nothing has been entered yet, wait for the input indifinitely
             letter = str(keypad_read())
         else: #If it's the 2nd or nth entered number, wait only for the INTER_DIGIT time
             letter = str(keypad_read(3))
 
+        letters = [x[i] for x in passwords]
+
         password_input += letter
         led_display(password_input)
 
-        if (password[i] != letter):
+        if (letter not in letters):
             logtime(False)
             sys.stdout.write("\nACCESS DENIED\n")
             flash_red()
             return False
 
-    sys.stdout.write("\nACCESS GRANTED\n")
-    logtime(True)
-    flash_green()
-    return True
+    if password_input == passwords[0]:
+        sys.stdout.write("\nACCESS GRANTED\n")
+        logtime(True)
+        flash_green()
+        return True
+    elif password_input == passwords[1]:
+        logtime(True)
+        flash_green()
+        return print_line(0, read_menu())
+    else:
+        logtime(False)
+        sys.stdout.write("\nACCESS DENIED\n")
+        flash_red()
+        return False
 
-def safe_password_read(password):
+def safe_password_read(passwords):
     '''
     This function implements the 'Remove side-channel vulnerability' optional
     software functionality. It's the safe version of the basic passwordRead() function.
@@ -68,7 +89,7 @@ def safe_password_read(password):
     console_clear()
     sys.stdout.write("Enter password:\n")
 
-    for i in range(len(password)-1):
+    for i in range(len(passwords[0])):
         if i == 0: #If nothing has been entered yet, wait for the input indifinitely
             letter = str(keypad_read())
         else: #If it's the 2nd or nth entered number, wait only for the INTER_DIGIT time
@@ -77,13 +98,18 @@ def safe_password_read(password):
         password_input += letter
         led_display(password_input)
 
-    if password_input == password:
+    if password_input == passwords[0]:
         sys.stdout.write("\nACCESS GRANTED\n")
         logtime(True)
         flash_green()
         return True
+    elif password_input == passwords[1]:
+        logtime(True)
+        return print_line(0, read_menu())
     else:
         logtime(False)
         sys.stdout.write("\nACCESS DENIED\n")
         flash_red()
         return False
+
+safe_password_read(read_from_file())
