@@ -32,11 +32,11 @@ def row_read():
     bus = smbus.SMBus(1)
     #a map between the row no and corresponding data bus bits
     MAP = {
-    '000': 0,
-    '001': 1,
-    '010': 2,
-    '011': 3,
-    '111': False
+    '111': 0,
+    '110': 1,
+    '101': 2,
+    '100': 3,
+    '000': False
     }
 
     value = bin(bus.read_byte(0x38))[2:5] #take the 3 most significant bits
