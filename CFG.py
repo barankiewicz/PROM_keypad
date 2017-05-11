@@ -1,15 +1,3 @@
-INTER_DIGIT = 3
-
-########### MAXIMUM TRY LOCKOUT #
-
-MAXIMUM_TRIES = 0
-TIMEOUT = 5
-
-########### TIME LOCKOUT #######
-
-START_TIME = 0
-END_TIME = 0
-
 ########### PINS ###############
 
 LOAD = 17

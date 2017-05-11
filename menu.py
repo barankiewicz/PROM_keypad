@@ -1,6 +1,7 @@
 from global_variables import *
 from console_clear import *
 from keypad_read import *
+from easter_egg import *
 import sys
 
 def print_line(i, dico):
@@ -17,7 +18,7 @@ def print_line(i, dico):
     result = ''
     result += str(i + 1) + ". "
     result += str(dico[i][0])
-    result += ', * - up, # - down, 5 - edit, 0 - return'
+    result += ', # - up, * - down, 5 - edit, 0 - return'
 
     console_clear()
     sys.stdout.flush()
@@ -52,6 +53,12 @@ def edit_line(var):
     and acts as a gateway for the function where the user can actually edit the
     variable.
     '''
+
+    if var == 'STAR_WARS': #EASTER EGG!!!
+        time.sleep(0.5)
+        star_wars()
+        return print_line(0, read_menu())
+
 
     #Create the line in a neat way and write it
     sys.stdout.flush()
@@ -90,7 +97,7 @@ def num_parser(var, char):
     Doesn't allow the password to be longer than 4 digits
     '''
     new = var + char
-    return len(new) > 3
+    return  not len(new) > 3
 
 def time_parser(var, char):
     '''
@@ -107,7 +114,7 @@ def password_parser(var, char):
     Doesn't allow the password to be longer than 4 digits
     '''
     new = var + char
-    return len(new) > 4
+    return not len(new) > 4
 
 def parser(variable, prev, char):
     '''
@@ -153,6 +160,7 @@ def edit_value(var, dico):
             return print_line(0, read_menu())
         else: #Pass the value through the parser
             if parser(var, new, choice):
+                print('True')
                 new += choice
                 result += choice
             else:

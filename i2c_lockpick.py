@@ -1,5 +1,5 @@
-#import RPi.GPIO as GPIO
-#import smbus, time
+
+import smbus, time
 
 def check_leds():
     '''
@@ -10,19 +10,11 @@ def check_leds():
     result = [value[3] == '1', value[4] == '1']
     return tuple(result)
 
-def idle(dur):
-    '''
-    This function idles for the specific duration - it doesn't drive any
-    data onto any of the rows
-    '''
-    start = time.time()
-    while float(time.time() - start) < dur:
-        bus.write_byte(0x38, 0b11111000)
-
 def column(col):
     '''
     This function drives a 0 onto a row that is passed as an argument
     '''
+    bus = smbus.SMBus(1)
     if col == 0:
         bus.write_byte(0x38, 0b11111100)
     elif col == 1:
@@ -37,21 +29,23 @@ def row_read():
     '''
     This function reads which row the 0 is driven onto by the lock system and returns its number [0..3]
     '''
+    bus = smbus.SMBus(1)
     #a map between the row no and corresponding data bus bits
     MAP = {
-    0: '000',
-    1: '001',
-    2: '010',
-    3: '011'
+    '000': 0,
+    '001': 1,
+    '010': 2,
+    '011': 3,
+    '111': False
     }
 
     value = bin(bus.read_byte(0x38))[2:5] #take the 3 most significant bits
+    #value = bin(bus.read_byte(0x38)) #take the 3 most significant bits
 
-    for i in range(len(MAP.keys())):
-        if map[i] == value:
-            return i
-
-    return False
+    if value in MAP.keys():
+        return MAP[value]
+    else:
+        raise new Exception("dobra dupa")
 
 def drive(row, col):
     '''
@@ -66,6 +60,7 @@ def drive(row, col):
     ['*', '0', '#']
     ]
 
+    bus = smbus.SMBus(1)
     while True:
         if row_read() == row:
             column(col)
@@ -83,9 +78,11 @@ def lockpick():
     ['7', '8', '9'],
     ['*', '0', '#']
     ]
+    f = open("cracked_password.txt", 'w')
     bus = smbus.SMBus(1)
     password = ''
 
+    bus = smbus.SMBus(1)
     while True: #Loop through the driving algorithm until the green LED lights up
         row = 0
         col = 0
@@ -101,4 +98,24 @@ def lockpick():
                     password += MATRIX[row][col]
                 elif leds[1] == True: #if the green LED lights up, add the digit to the password and return it, the lock is picked!
                     password += MATRIX[row][col]
-                    return password
+                    f.write(password)
+                    return
+
+def idle(dur):
+    '''
+    This function idles for the specific duration - it doesn't drive any
+    data onto any of the rows
+    '''
+    IDLE = 0xF8
+
+    start = time.time()
+    while float(time.time() - start) < dur:
+        time.sleep(0.01)
+        bus.write_byte(I2C_ADDR, IDLE)
+
+bus = smbus.SMBus(1)
+I2C_ADDR = 0x38
+
+while(True):
+    time.sleep(1)
+    row_read()

@@ -28,7 +28,7 @@ def logtime(result):
     '''Logs the keypad input in log.csv along with if it was right or wrong'''
     with open('log.csv', 'a') as csvfile:
         log = csv.writer(csvfile, delimiter = ' ')
-        log.writerow(['Entered combination'] +
+        log.writerow(
         [time.gmtime(time.time()).tm_year] +
         [time.gmtime(time.time()).tm_mon] +
         [time.gmtime(time.time()).tm_mday] +
