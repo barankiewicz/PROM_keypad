@@ -62,9 +62,10 @@ def drive(row, col):
 
     bus = smbus.SMBus(1)
     while True:
-        if row_read() == row:
+        #if row_read() == row:
+        while row_read() == row:
             column(col)
-            time.sleep(0.01)
+            #time.sleep(0.01)
             return
 
 def lockpick():
