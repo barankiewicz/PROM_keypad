@@ -1,14 +1,8 @@
-from random import randint
-from collections import OrderedDict
+def time_parser(var, char):
+    legal_values = [str(i) for i in range(0,25)]
+    print(legal_values)
 
-def remove_duplicates():
-    lines_seen = [] # holds lines already seen
-    outfile = open('brute_force2.txt', "w")
-    for line in open('brute_force.txt', "r"):
-        if line not in lines_seen: # not a duplicate
-            outfile.write(line)
-            lines_seen.append(line)
-    outfile.close()
+time_parser('1', '1')
 
 
 def add_birthdays():
@@ -66,5 +60,3 @@ def add_random():
                     result += str(l)
                     result += '\n'
                     f.write(result)
-
-remove_duplicates()

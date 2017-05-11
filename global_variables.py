@@ -19,7 +19,7 @@ def read():
 def read_menu():
     '''
     This function reads the global variables from the csv containing them
-    and returns them as a counter dictionary for the menu
+    and returns them as a counted dictionary for the menu purposes
     '''
     output = []
     with open('GLOBAL_VARIABLES.csv', 'rU') as csvfile:
