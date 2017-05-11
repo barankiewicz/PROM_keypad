@@ -94,7 +94,8 @@ def lockpick():
                 drive(row, col)
                 leds = check_leds()
 
-                if leds[0] == True: #If the red LED lights up, check the next digit
+                if leds[0] == True: #If the red LED lights up, check the next digit after waiting for 1s
+                    idle(1)
                     continue
                 elif leds[0] == False and leds[1] == False: #if no LEDs light up, add the digit to the password and continue
                     password += MATRIX[row][col]
