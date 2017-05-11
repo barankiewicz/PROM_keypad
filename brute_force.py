@@ -54,7 +54,8 @@ def brute_force():
 
         time.sleep(0.2)
         leds = check_leds()
-        if leds[0] == True: #If the red LED lights up, check the next password
+        if leds[0] == True: #If the red LED lights up, check the next password after 1s
+            idle(1)
             continue
         elif leds[1] == True: #if the green LED lights up, return the password, the lock is picked!
             return password
