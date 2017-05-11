@@ -31,6 +31,8 @@ def brute_force():
     The file was created with optimization of cracking times in mind.
     The first 20 lines are the 20 most common PINs according to the study held by:
     http://datagenetics.com/blog/september32012/index.html
+    For the full discussion on how I improved the cracking times, please refer to my
+    individual log I submitted with the code.
     According to the article, those 20 PINs make up for over 25% of all PINs being used
     in the world right now. So that should be a VERY significant speed up over just checking
     the combinations randomly.
