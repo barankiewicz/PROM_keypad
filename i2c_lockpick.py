@@ -128,6 +128,15 @@ def drive_char(char):
 
     return drive(row, col)
 
+    #MATRIX_DECODE = {
+    #'1': (0, 0), '2': (0, 1), '3': (0, 2),
+    #'4': (1, 0), '5': (1, 1), '6': (1, 2),
+    #'7': (2, 0), '8': (2, 1), '9': (2, 2),
+    #'*': (3, 0), '0': (3, 1), '#': (3, 2)    
+    #}
+    #rowCol = MATRIX_DECODE[char]
+    #return drive(rowCol[0], rowCol[1])
+
 def lockpick():
     '''
     This is the main lockpicking function. It returns the password when it detects
