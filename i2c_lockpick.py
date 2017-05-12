@@ -67,6 +67,14 @@ def row_read():
         return MAP[value]
     else:
         return False
+    
+    #==============================
+    #try:
+    #    return MAP[value]
+    #except Exception:
+    #    return False
+    #==============================
+    
 
 def drive(row, col):
     '''
@@ -128,6 +136,7 @@ def drive_char(char):
 
     return drive(row, col)
 
+    #==========================================
     #MATRIX_DECODE = {
     #'1': (0, 0), '2': (0, 1), '3': (0, 2),
     #'4': (1, 0), '5': (1, 1), '6': (1, 2),
@@ -136,6 +145,7 @@ def drive_char(char):
     #}
     #rowCol = MATRIX_DECODE[char]
     #return drive(rowCol[0], rowCol[1])
+    #===========================================
 
 def lockpick():
     '''
