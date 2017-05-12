@@ -66,15 +66,7 @@ def row_read():
     if value in MAP.keys():
         return MAP[value]
     else:
-        return False
-    
-    #==============================
-    #try:
-    #    return MAP[value]
-    #except Exception:
-    #    return False
-    #==============================
-    
+        return False    
 
 def drive(row, col):
     '''
