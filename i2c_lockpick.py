@@ -6,9 +6,31 @@ def check_leds():
     This function checks the status of the green and red LEDs in the lock system
     and returns a tuple of their boolean values (RED, GREEN)
     '''
-    value = bin(bus.read_byte(0x38))[2:]
+    value = str(format(bus.read_byte(0x38), '#010b'))[2:]
     result = [value[3] == '1', value[4] == '1']
+    bus.write_byte(0x38, 0b11111000)
     return tuple(result)
+
+def check_red():
+    '''
+    This function checks the status of the red LED in the lock system
+    and returns it as a boolean
+    '''
+    value = str(format(bus.read_byte(0x38), '#010b'))[2:]
+    bus.write_byte(0x38, 0b11111000)
+    return value[3] == '1'
+
+def check_buzz():
+    '''
+    This function checks the status of the buzzer in the lock system
+    and returns it as a boolean
+    '''
+    start = time.time()
+    while float(time.time() - start) < 0.2:
+        value = str(format(bus.read_byte(0x38), '#010b'))[2:]
+        bus.write_byte(0x38, 0b11111000)
+        if value[4] != '1':
+            return value[4] != '1'
 
 def column(col):
     '''
@@ -16,13 +38,13 @@ def column(col):
     '''
     bus = smbus.SMBus(1)
     if col == 0:
-        bus.write_byte(0x38, 0b11111100)
+        bus.write_byte(0x38, 0b11111001)
     elif col == 1:
         bus.write_byte(0x38, 0b11111010)
     elif col == 2:
-        bus.write_byte(0x38, 0b11111001)
-
-    time.sleep(0.01)
+        bus.write_byte(0x38, 0b11111100)
+    elif col == False:
+        bus.write_byte(0x38, 0b11111000)
     return
 
 def row_read():
@@ -32,20 +54,19 @@ def row_read():
     bus = smbus.SMBus(1)
     #a map between the row no and corresponding data bus bits
     MAP = {
-    '111': 0,
-    '110': 1,
-    '101': 2,
-    '100': 3,
-    '000': False
+    '110': 0,
+    '010': 1,
+    '100': 2,
+    '000': 3,
     }
-
-    value = bin(bus.read_byte(0x38))[2:5] #take the 3 most significant bits
-    #value = bin(bus.read_byte(0x38)) #take the 3 most significant bits
-
+    bus.write_byte(0x38, 0b11111000)
+    value = str(format(bus.read_byte(0x38), '#010b'))[2:5] #take the 3 most significant bits
+    #value = str(format(bus.read_byte(0x38), '#010b')) #take the 3 most significant bits
+    #print(value)
     if value in MAP.keys():
         return MAP[value]
     else:
-        raise new Exception("dobra dupa")
+        return False
 
 def drive(row, col):
     '''
@@ -61,17 +82,32 @@ def drive(row, col):
     ]
 
     bus = smbus.SMBus(1)
-    while True:
-        #if row_read() == row:
-        while row_read() == row:
-            column(col)
-            #time.sleep(0.01)
-            return
+    bus.write_byte(0x38, 0b11111000)
+    # while True:
+    #     if row_read() == row:
+    #         while row_read() == row:
+    #             column(col)
+    #         bus.write_byte(0x38, 0b11111000)
+    #         return MATRIX[row][col]
 
-def lockpick():
+    while check_buzz():
+        if row_read() == row:
+            while row_read() == row:
+                column(col)
+    bus.write_byte(0x38, 0b11111000)
+    return MATRIX[row][col]
+
+
+
+
+    bus.write_byte(0x38, 0b11111000)
+    return MATRIX[row][col]
+
+
+
+def drive_char(char):
     '''
-    This is the main lockpicking function. It returns the password when it detects
-    that the green LED has lit up.
+    This function drives the symbol onto the lock system.
     '''
     MATRIX = [
     ['1', '2', '3'],
@@ -79,28 +115,51 @@ def lockpick():
     ['7', '8', '9'],
     ['*', '0', '#']
     ]
+
+    #first, find out which row and column needs to be driven to drive this char
+    col = 0
+    row = 0
+    for i in range(4):
+        if char in MATRIX[i]:
+            row = i
+            for j in range(3):
+                if char == MATRIX[i][j]:
+                    col = j
+
+    return drive(row, col)
+
+def lockpick():
+    '''
+    This is the main lockpicking function. It returns the password when it detects
+    that the green LED has lit up.
+    '''
     f = open("cracked_password.txt", 'w')
     bus = smbus.SMBus(1)
+
+    chars = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '*', '#']
     password = ''
+    wrong = ''
 
-    bus = smbus.SMBus(1)
-    while True: #Loop through the driving algorithm until the green LED lights up
-        row = 0
-        col = 0
-        for row in range(4):
-            for col in range(3):
-                drive(row, col)
-                leds = check_leds()
+    while len(password) < 4:
+        for char in chars:
+            for i in range(len(password)):
+                time.sleep(0.5)
+                drive_char(password[i])
+                time.sleep(0.5)
 
-                if leds[0] == True: #If the red LED lights up, check the next digit after waiting for 1s
-                    idle(1)
-                    continue
-                elif leds[0] == False and leds[1] == False: #if no LEDs light up, add the digit to the password and continue
-                    password += MATRIX[row][col]
-                elif leds[1] == True: #if the green LED lights up, add the digit to the password and return it, the lock is picked!
-                    password += MATRIX[row][col]
-                    f.write(password)
-                    return
+            drive_char(char)
+            time.sleep(0.5)
+
+            led = check_red()
+            if led == False:
+                wrong = char
+                idle(1)
+            else:
+                password += char
+                drive_char(wrong)
+                break
+
+    return password
 
 def idle(dur):
     '''
@@ -111,12 +170,11 @@ def idle(dur):
 
     start = time.time()
     while float(time.time() - start) < dur:
-        time.sleep(0.01)
         bus.write_byte(I2C_ADDR, IDLE)
 
 bus = smbus.SMBus(1)
 I2C_ADDR = 0x38
+# while True:
+#     print(check_red())
 
-while(True):
-    time.sleep(1)
-    row_read()
+lockpick()

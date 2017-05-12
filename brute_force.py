@@ -1,29 +1,5 @@
 from i2c_lockpick import *
 
-def drive_char(char):
-    '''
-    This function drives the symbol onto the lock system.
-    '''
-    MATRIX = [
-    ['1', '2', '3'],
-    ['4', '5', '6'],
-    ['7', '8', '9'],
-    ['*', '0', '#']
-    ]
-
-    #first, find out which row and column needs to be driven to drive this char
-    col = 0
-    row = 0
-    for i in range(4):
-        if char in MATRIX[i]:
-            row = i
-            for j in range(3):
-                if char == MATRIX[i][j]:
-                    col = j
-
-    drive(row, col)
-
-
 def brute_force():
     '''
     This function implements the brute force attack technique.
@@ -50,12 +26,14 @@ def brute_force():
         password = password.strip('\n')
 
         for letter in password:
+            idle(0.5)
             drive_char(letter)
+            idle(0.5)
 
         time.sleep(0.2)
-        leds = check_leds()
-        if leds[0] == True: #If the red LED lights up, check the next password after 1s
-            idle(1)
+        led = check_red()
+        if led == False:
             continue
-        elif leds[1] == True: #if the green LED lights up, return the password, the lock is picked!
-            return password
+        else:
+            print(row)
+            return row

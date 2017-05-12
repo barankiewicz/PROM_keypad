@@ -23,10 +23,13 @@ def read_from_file():
 
     return tuple(passwords)
 
+#print(read_from_file())
+
+
 def password_read(passwords):
     '''
     This function reads the sequence entered by the user, displays it in the console
-    and compares it to the password read from ReadFromFile() function.
+    and compares it to the password read from Read_From_File() function.
     It compares both digit-by-digit, so as soon as the wrong digit is entered,
     it flashed the red LED and returns False. If the whole password was entered
     correctly, it returns True
@@ -60,7 +63,8 @@ def password_read(passwords):
         return True
     elif password_input == passwords[1]:
         logtime(True)
-        return print_line(0, read_menu())
+        print_line(0, read_menu())
+        return True
     else:
         logtime(False)
         sys.stdout.write("\nACCESS DENIED\n")
@@ -99,7 +103,8 @@ def safe_password_read(passwords):
         return True
     elif password_input == passwords[1]:
         logtime(True)
-        return print_line(0, read_menu())
+        print_line(0, read_menu())
+        return True
     else:
         logtime(False)
         sys.stdout.write("\nACCESS DENIED\n")

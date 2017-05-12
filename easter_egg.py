@@ -77,7 +77,7 @@ def careless_whisper():
     play_note('G4', 0.1)
     play_note('A4', 0.1)
     play_note('C5', 0.1)
-    
+
     play_note('E5', 0.4)
     play_note('D5', 0.2)
     play_note('A4', 0.4)
@@ -95,8 +95,8 @@ def careless_whisper():
     play_note('D4', 0.4)
     play_note('C5', 0.6)
     play_note('Bb4', 0.2)
-    play_note('F4', 0.6)  
-    
+    play_note('F4', 0.6)
+
     time.sleep(0.4)
 
     play_note('Bb4', 0.4)
@@ -114,7 +114,7 @@ def careless_whisper():
     play_note('G4', 0.4)
     play_note('A4', 0.4)
 
-def super_mario1:
+def super_mario1():
     #   crotchet = 0.6
 
     play_note('E5', 0.15)
@@ -130,7 +130,7 @@ def super_mario1:
     play_note('G4', 0.15)
     time.sleep(0.45)
 
-    for x in range(2)
+    for x in range(2):
         play_note('C5', 0.15)
         time.sleep(0.3)
         play_note('G4', 0.15)

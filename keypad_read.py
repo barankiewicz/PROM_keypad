@@ -59,6 +59,7 @@ def poll(dur = 0):
             key = single_poll()
             if not key == False:
                 buzzer()
+                signal()
                 return key
             else:
                 continue
@@ -72,6 +73,8 @@ def single_poll():
     If it didn't get any 0's on the columns, returns False
     '''
     for i in range(4): #loop through the rows
+        # time.sleep(2)
+        # print('Checking row: ' + str(i))
         pi_to_key()
         GPIO.output(DATA0, MAP[i][0])  #MSB
         GPIO.output(DATA1, MAP[i][1])
@@ -86,3 +89,17 @@ def single_poll():
                     return str(MATRIX[i][j])
 
     return False
+
+def signal(dur = 0.01):
+    '''
+    This function implements the 'piezoelectric buzzer' optional software functionality.
+    Buzzes the buzzer at 1kHz for specified amount of seconds.
+    By default, it buzzes for 0.2 seconds.
+    '''
+    pi_to_key()
+    start = time.time()
+    while float(time.time() - start) < dur:
+        GPIO.output(DATA0, 1)  #MSB
+        GPIO.output(DATA1, 1)
+        GPIO.output(DATA2, 1) #LSB
+    return

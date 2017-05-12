@@ -8,13 +8,17 @@ def read():
     output = []
     with open('GLOBAL_VARIABLES.csv', 'rU') as csvfile:
         reader = csv.reader(csvfile, delimiter=' ')
+        dico = {}
         for row in reader:
             if len(row) == 0:
                 continue
             else:
                 output.append(tuple(row))
     csvfile.close()
-    return {key: int(value) for (key,value) in output}
+    dico = {key: int(value) for (key,value) in output}
+    dico['PASSWORD'] = str(format(dico['PASSWORD'], '#04d'))
+    dico['ADMIN_PASSWORD'] = str(format(dico['ADMIN_PASSWORD'], '#04d'))
+    return dico
 
 def read_menu():
     '''

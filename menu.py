@@ -18,7 +18,7 @@ def print_line(i, dico):
     result = ''
     result += str(i + 1) + ". "
     result += str(dico[i][0])
-    result += ', # - up, * - down, 5 - edit, 0 - return'
+    result += ', * - down, # - up, 5 - edit, 0 - return'
 
     console_clear()
     sys.stdout.flush()
@@ -29,17 +29,11 @@ def print_line(i, dico):
     choice = keypad_read()
 
     if str(choice) == '*': #If the press is *, go 'up' the menu
-        if (i + 1) > max_choice: #If it can't go up any more, just print out the same line
-            return print_line(i, dico)
-        else:
-            i += 1
-            return print_line(i, dico)
+        i += 1
+        return print_line(i%len(read_menu().keys()), dico)
     elif str(choice) == '#': #If the press is #, go 'down' the menu
-        if (i - 1) < min_choice: #If it can't go down any more, just print out the same line
-            return print_line(i, dico)
-        else:
-            i -= 1
-            return print_line(i, dico)
+        i -= 1
+        return print_line(i%len(read_menu().keys()), dico)
     elif str(choice) == '5': #If the press is 5, initialize the edit function for the current variable
         return edit_line(dico[i][0])
     elif str(choice) == '0': #If the press is 0, return to the main lock function
@@ -57,6 +51,12 @@ def edit_line(var):
     if var == 'STAR_WARS': #EASTER EGG!!!
         time.sleep(0.5)
         star_wars()
+        time.sleep(2)
+        careless_whisper()
+        time.sleep(2)
+        super_mario1()
+        time.sleep(2)
+        super_mario2()
         return print_line(0, read_menu())
 
 
