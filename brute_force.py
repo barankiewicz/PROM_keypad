@@ -9,14 +9,6 @@ def brute_force():
     http://datagenetics.com/blog/september32012/index.html
     For the full discussion on how I improved the cracking times, please refer to my
     individual log I submitted with the code.
-    According to the article, those 20 PINs make up for over 25% of all PINs being used
-    in the world right now. So that should be a VERY significant speed up over just checking
-    the combinations randomly.
-    The next 456 lines are lines in the format of DDMM/MMDD, where DD - day of the month,
-    MM - month. According to the article mentioned above, people tend to use PINs
-    in this format very often.
-    The rest of the files are the passwords generated randomly in a way so that there are
-    no duplicates.
     '''
 
     f = open('brute_force.txt', 'r')
